@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}
+        {% endblock %}
+
+        {% block javascripts %}
+        {% endblock %}
+        <link href="/css/style.css" rel="stylesheet" />
+    </head>
+    <body>
+    <header>
+        <nav>
+            <ul>
+                <li><a class="active" href="{{ path('app_main_home') }}">Bucket-List</a></li>
+                <li><a href="{{ path('app_wish_index') }}">Les Wish</a></li>
+                {% if app.user %}
+                    <li><a>Salut {{ app.user.pseudo() }} !</a></li>
+                    <li><a href="{{ path('app_wish_creer') }}">Créer Wish</a></li>
+                    <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                {% endif %}
+
+                {% if not app.user %}
+                    <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                    <li><a href="{{ path('app_register') }}">Register</a></li>
+                {% endif %}
+
+                <li><a href="{{ path('app_main_about') }}">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert">
+                <div class="toast-body">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <footer>
+        <small>
+            ©{{ 'now' | date('Y') }}Bucket-List
+        </small>
+    </footer>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>
