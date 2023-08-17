@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\WishRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: WishRepository::class)]
 class Wish
@@ -15,15 +16,19 @@ class Wish
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('wishes:read')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('wishes:read')]
     private ?string $description = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups('wishes:read')]
     private ?string $author = null;
 
     #[ORM\Column]
+    #[Groups('wishes:read')]
     private ?bool $isPublished = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -31,6 +36,9 @@ class Wish
 
     #[ORM\ManyToOne(inversedBy: 'wish')]
     private ?Category $category = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isRealised = null;
 
     public function getId(): ?int
     {
@@ -108,4 +116,34 @@ class Wish
 
         return $this;
     }
+
+    public function isIsRealised(): ?bool
+    {
+        return $this->isRealised;
+    }
+
+    public function setIsRealised(?bool $isRealised): static
+    {
+        $this->isRealised = $isRealised;
+
+        return $this;
+    }
+
+    public function __serialize(): array
+    {
+     return [
+       'id' => $this->id,
+       'title' => $this->title,
+       'description' => $this->description
+     ];
+         }
+
+    public function __unserialize(array $data): void
+    {
+          $this->id = $data['id'];
+            $this->title = $data['title'];
+            $this->description = $data['description'];
+    }
+
+
 }

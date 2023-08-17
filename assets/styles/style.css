@@ -3,12 +3,10 @@
     font-family: 'Mukta', sans-serif;
 }
 
-#wish_form > div{
-    margin:7px;
-}
-
-#wish_form > div > input, select{
-    margin: 10px;
+#wish_form{
+    display: flex;
+    flex-flow: column wrap;
+    height: 300px;
 }
 
 ul {
@@ -55,6 +53,6 @@ footer {
     position:absolute;
     bottom:0;  /* on le colle en bas */
     width:100%;
-    height:50px;   /* Hauteur du pied de page */
+    height:27px;   /* Hauteur du pied de page */
     background-color: #04AA6D;
 }

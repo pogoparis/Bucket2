@@ -1,16 +1,23 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci ipsa non quam soluta vero. Alias at deserunt
-        ipsum laudantium mollitia nihil, perspiciatis placeat quos repudiandae sint, suscipit tempore ut, vero.
-    </div>
-    <div>Ab aspernatur aut consectetur deserunt dolore dolores et explicabo fugiat, ipsa ipsam labore necessitatibus
-        officia officiis quos reprehenderit, sint tempora velit, voluptas. Assumenda impedit necessitatibus neque nisi
-        sunt, ut veritatis?
+    <div class="container">
+        {% for value in obj %}
+            <div class="detail">
+                <div class="container-img">
+                    <img class="img" src="{{ value.picture }}" alt="photo"/>
+                </div>
+                <div class="text">
+                    <h3> {{ value.firstname }} {{ value.lastname }}</h3>
+                    <span>{{ value.description }}</span>
+                    <p>Date de naissance : {{ value.dateOfBirth | date('d-m-Y') }}</p>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}
 
 {% block title %}
-
+    {{ parent() }} | About us
 {% endblock %}
 

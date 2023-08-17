@@ -4,8 +4,11 @@
 
 {% block body %}
 <h2>Liste Wishes</h2>
-    {% for wish in wishes %}
-        <a href="{{ path('app_wish_detail',{'wish':wish.id}) }}">{{ wish.title }}</a>
-
-    {% endfor %}
+    <table>
+        {% for wish in wishes %}
+            <tr>
+               <td><a href="{{ path('app_wish_detail',{'wish':wish.id}) }}">{{ wish.title }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

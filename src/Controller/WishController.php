@@ -5,12 +5,16 @@ namespace App\Controller;
 use App\Entity\Wish;
 use App\Form\WishFormType;
 use App\Repository\WishRepository;
+use App\Services\Censurator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Config\Framework\SerializerConfig;
 
 class WishController extends AbstractController
 {
@@ -19,10 +23,11 @@ class WishController extends AbstractController
         WishRepository $wishRepository
     ): Response
     {
-        $wishes = $wishRepository->findBy(
-            ['isPublished' => true],
-            ['dateCreated' => 'ASC']
-        );
+        $wishes = $wishRepository->findAllPublished();
+//        $wishes = $wishRepository->findBy(
+//            ['isPublished' => true],
+//            ['dateCreated' => 'ASC']
+//        );
         return $this->render('wish/index.html.twig', compact('wishes'));
     }
 
@@ -46,6 +51,8 @@ class WishController extends AbstractController
     public function creer(
         Request $request,
         EntityManagerInterface $entityManager,
+       // injection de dépendance
+        Censurator $censurator
     ): Response
     {
         $wish = new Wish();
@@ -54,8 +61,14 @@ class WishController extends AbstractController
         $wish->setDateCreated(new \DateTime());
 
         $wishForm = $this->createForm(WishFormType::class, $wish);
+
         $wishForm->handleRequest($request);
         if($wishForm->isSubmitted() && $wishForm->isValid()){
+
+            // Utilisation du service censurator
+            $wish->setDescription($censurator->purify($wish->getDescription()));
+            $wish->setTitle($censurator->purify($wish->getTitle()));
+
             $entityManager->persist($wish);
             $entityManager->flush();
             $this->addFlash('success', 'Votre Wish a bien été créé');
@@ -64,6 +77,21 @@ class WishController extends AbstractController
         }
 
         return $this->render('wish/creer.html.twig', compact("wishForm"));
+    }
+
+    #[Route('/api/wish', name: '_api_wish')]
+    function api(
+        WishRepository $wishRepository,
+        SerializerInterface $serializer
+    ):Response
+    {
+       $wishes = $wishRepository->findAll();
+       return new JsonResponse($serializer->serialize($wishes, 'json',
+       ['groups' => 'wishes:read']),
+       200,
+       [],
+       true
+       );
     }
 
 }
